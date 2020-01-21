@@ -5,24 +5,164 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>拖拽模型</title>
+    <title>作业1讲解-网易汽车滑块</title>
     <style>
         * {
             margin: 0;
             padding: 0;
         }
 
-        div {
-            width: 400px;
-            height: 400px;
-            background: yellowgreen;
+        .car_pic {
+            width: 500px;
+            height: 421px;
+            border: 1px solid #000;
+            margin-left: 100px;
+            position: relative;
+        }
+
+        .car_pic ul {
+            list-style: none;
+        }
+
+        .car_pic ul li {
+            width: 500px;
+            height: 375px;
+            display: none;
+        }
+
+        .car_pic ul li img {
+            width: 500px;
+            height: 375px;
+        }
+
+        .car_pic ul li.cur {
+            display: block;
+        }
+
+        .car_pic_ctr {
+            width: 405px;
+            height: 26px;
+            background: yellow url("images/h1/car_pic_ctr.png") repeat-x 0 -26px;
+            line-height: 26px;
+            font-size: 12px;
+            margin: 0 auto;
+        }
+
+        .car_pic_ctr .ctr_l {
+            float: left;
+            width: 0px;
+            height: 26px;
+            padding-left: 20px;
+            background: url("images/h1/car_pic_ctr.png") no-repeat 0 0;
+        }
+
+        .car_pic_ctr .ctr_r {
+            float: right;
+            width: 0px;
+            height: 26px;
+            padding-right: 45px;
+            background: url("images/h1/car_pic_ctr.png") no-repeat 25px -78px;
+        }
+
+        .car_pic_ctr .ctr_center {
+            float: left;
+            width: 300px;
+            height: 26px;
+            background: url("images/h1/car_pic_ctr.png") repeat-x 0 -52px;
+            margin: 0 20px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .car_pic_ctr .ctr_center b {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 21px;
+            height: 26px;
+            background: blue url("images/h1/car_pic_ctr.png") repeat-x 0px -104px;
         }
     </style>
 </head>
 <body>
-<div></div>
+<div class="car_pic">
+    <div class="imagelist" id="imagelist">
+        <ul>
+            <li class="cur"><img src="images/h1/0.jpg" alt=""></li>
+            <li><img src="images/h1/1.jpg" alt=""></li>
+            <li><img src="images/h1/2.jpg" alt=""></li>
+            <li><img src="images/h1/3.jpg" alt=""></li>
+            <li><img src="images/h1/4.jpg" alt=""></li>
+        </ul>
+    </div>
+    <div class="car_pic_ctr">
+        <div class="ctr_l">0°</div>
+        <div class="ctr_center" id="ctr_center">
+            <b id="barB"></b>
+        </div>
+        <div class="ctr_r">180°</div>
+    </div>
+</div>
 
 <script>
+    let barB = document.getElementById("barB")
+    let ctr_center = document.getElementById("ctr_center")
+    let imagelistlis = document.getElementById("imagelist").getElementsByTagName("li")
+
+    let maxLeft = ctr_center.clientWidth - barB.clientWidth;
+
+    let step = maxLeft / 4
+
+    let idx = 0
+
+    barB.onmousedown = function (event) {
+        event = event || window.event
+        let deltaX = event.clientX - this.offsetLeft
+
+        document.onmousemove = function (event) {
+            event = event || window.event
+            let x = event.clientX - deltaX
+
+            x = parseInt(x / step) * step
+
+            if (x < 0) x = 0
+            if (x > maxLeft) x = maxLeft
+
+            if (idx !== parseInt(x / step)) {
+                imagelistlis[idx].className = ""
+                idx = parseInt(x / step)
+                barB.style.left = x + "px"
+                imagelistlis[idx].className = "cur"
+            }
+            return false
+
+        }
+
+        document.onmouseup = function () {
+            document.onmousemove = null
+        }
+
+        return false
+    }
+
+    ctr_center.onmousedown = function (event) {
+        event = event || window.event
+        let x = event.clientX - getAllLeft(ctr_center)
+        imagelistlis[idx].className = ""
+        idx = Math.round(x / step)
+        barB.style.left = idx * step + "px"
+        imagelistlis[idx].className = "cur"
+    }
+
+    function getAllLeft(obj) {
+        let allleft = obj.offsetLeft
+        while (obj = obj.offsetParent) {
+            allleft += obj.offsetLeft
+        }
+        return allleft
+
+    }
+
 
 </script>
 </body>
