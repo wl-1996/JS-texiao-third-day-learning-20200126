@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>作业1讲解-网易汽车滑块</title>
+    <title>网易汽车滑块</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +20,7 @@
             position: relative;
         }
 
-        .car_pic ul {
+        .car_pic .imglist ul {
             list-style: none;
         }
 
@@ -30,63 +30,63 @@
             display: none;
         }
 
+        .car_pic ul li.cur {
+            display: block;
+        }
+
         .car_pic ul li img {
             width: 500px;
             height: 375px;
         }
 
-        .car_pic ul li.cur {
-            display: block;
-        }
-
         .car_pic_ctr {
             width: 405px;
             height: 26px;
-            background: yellow url("images/h1/car_pic_ctr.png") repeat-x 0 -26px;
             line-height: 26px;
             font-size: 12px;
             margin: 0 auto;
+            background: yellow url("images/h1/car_pic_ctr.png") repeat-x 0 -26px;
         }
 
         .car_pic_ctr .ctr_l {
             float: left;
-            width: 0px;
+            width: 0;
             height: 26px;
             padding-left: 20px;
-            background: url("images/h1/car_pic_ctr.png") no-repeat 0 0;
+            background: url("images/h1/car_pic_ctr.png") no-repeat 0px 0px;
         }
 
         .car_pic_ctr .ctr_r {
             float: right;
-            width: 0px;
+            width: 0;
             height: 26px;
             padding-right: 45px;
-            background: url("images/h1/car_pic_ctr.png") no-repeat 25px -78px;
+            background: url("images/h1/car_pic_ctr.png") no-repeat 25px -78px
         }
 
         .car_pic_ctr .ctr_center {
-            float: left;
             width: 300px;
             height: 26px;
-            background: url("images/h1/car_pic_ctr.png") repeat-x 0 -52px;
             margin: 0 20px;
+            float: left;
+            background: yellow url("images/h1/car_pic_ctr.png") repeat-x 0px -52px;
             position: relative;
-            cursor: pointer;
         }
 
         .car_pic_ctr .ctr_center b {
             position: absolute;
-            top: 0;
             left: 0;
+            top: 0;
             width: 21px;
             height: 26px;
-            background: blue url("images/h1/car_pic_ctr.png") repeat-x 0px -104px;
+            background: url("images/h1/car_pic_ctr.png") no-repeat 0px -104px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 <div class="car_pic">
-    <div class="imagelist" id="imagelist">
+    <div class="imglist" id="imglist">
         <ul>
             <li class="cur"><img src="images/h1/0.jpg" alt=""></li>
             <li><img src="images/h1/1.jpg" alt=""></li>
@@ -105,65 +105,81 @@
 </div>
 
 <script>
-    let barB = document.getElementById("barB")
-    let ctr_center = document.getElementById("ctr_center")
-    let imagelistlis = document.getElementById("imagelist").getElementsByTagName("li")
+    // 得到元素
+    let barB = document.getElementById("barB")//滑块
+    let ctr_center = document.getElementById("ctr_center")//滑道
+    let imglistlis = document.getElementById("imglist").getElementsByTagName("li")
 
-    let maxLeft = ctr_center.clientWidth - barB.clientWidth;
+    // 计算一下滑块的最大left值
+    let maxLeft = ctr_center.clientWidth - barB.clientWidth
 
     let step = maxLeft / 4
-
+    // 信号量，当前显示的图片编号
     let idx = 0
-
+    // 拖拽模型
     barB.onmousedown = function (event) {
         event = event || window.event
         let deltaX = event.clientX - this.offsetLeft
 
         document.onmousemove = function (event) {
+            // 兼容处理
             event = event || window.event
+            // 计算一下此时滑块应该在的位置
             let x = event.clientX - deltaX
-
+            // 步长100
             x = parseInt(x / step) * step
-
-            if (x < 0) x = 0
-            if (x > maxLeft) x = maxLeft
-
-            if (idx !== parseInt(x / step)) {
-                imagelistlis[idx].className = ""
-                idx = parseInt(x / step)
-                barB.style.left = x + "px"
-                imagelistlis[idx].className = "cur"
+            // 验收
+            if (x < 0) {
+                x = 0
+            } else if (x > maxLeft) {
+                x = maxLeft
             }
-            return false
 
+            // 当信号量发生了改变，现在滑块位置和原来不一样了
+            if (idx !== parseInt(x / step)) {
+                //让老信号量的图去掉cur
+                imglistlis[idx].className = ""
+                //信号量改变
+                idx = parseInt(x / step)
+                //改变滑块位置
+                barB.style.left = x + "px"
+                //让新信号量的图加上cur
+                imglistlis[idx].className = "cur"
+            }
+
+            //阻止默认的事件，比如圈选文字
+            return false
         }
 
         document.onmouseup = function () {
             document.onmousemove = null
-        }
 
-        return false
+        }
     }
 
+    // 在滑道上点击
     ctr_center.onmousedown = function (event) {
+        //兼容处理
         event = event || window.event
+        //你鼠标点击的x位置
         let x = event.clientX - getAllLeft(ctr_center)
-        imagelistlis[idx].className = ""
+        //让老信号量的图去掉cur
+        imglistlis[idx].className = ""
+        //信号量改变,Math.round()方法四舍五入
         idx = Math.round(x / step)
+        //改变滑块位置
         barB.style.left = idx * step + "px"
-        imagelistlis[idx].className = "cur"
+        //让新信号量的图加上cur
+        imglistlis[idx].className = "cur"
     }
 
     function getAllLeft(obj) {
-        let allleft = obj.offsetLeft
+        let allLeft = obj.offsetLeft
         while (obj = obj.offsetParent) {
-            allleft += obj.offsetLeft
+            allLeft += obj.offsetLeft
         }
-        return allleft
-
+        return allLeft
     }
-
-
 </script>
 </body>
 </html>
