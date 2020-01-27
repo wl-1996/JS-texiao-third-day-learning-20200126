@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>jQuery中的元素尺寸</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        div {
+            width: 200px;
+            height: 200px;
+            padding: 10px;
+            border: 20px solid red;
+            margin: 30px;
+        }
+    </style>
+</head>
+<body>
+<div></div>
+
+<script src="js/jquery-1.12.3.min.js"></script>
+<script>
+    alert($("div").width())
+    alert($("div").innerWidth())
+    alert($("div").outerWidth())
+    alert($("div").outerWidth(true))
+</script>
+</body>
+</html>

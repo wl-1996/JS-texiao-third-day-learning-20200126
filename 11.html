@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>jQuery网易汽车滑块</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .car_pic {
+            width: 500px;
+            height: 421px;
+            border: 1px solid #000;
+            margin-left: 100px;
+            position: relative;
+        }
+
+        .car_pic .imglist ul {
+            list-style: none;
+            height: 381px;
+        }
+
+        .car_pic .imglist ul li {
+            width: 500px;
+            height: 375px;
+            display: none;
+        }
+
+        .car_pic .imglist ul li.cur {
+            display: block;
+        }
+
+        .car_pic .imglist ul li img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .car_pic_ctr {
+            width: 405px;
+            height: 26px;
+            line-height: 26px;
+            font-size: 12px;
+            margin: 0 auto;
+            background: url("images/h1/car_pic_ctr.png") repeat-x 0px -26px;
+        }
+
+        .car_pic_ctr .ctr_l {
+            float: left;
+            width: 0;
+            height: 26px;
+            padding-left: 20px;
+            background: url("images/h1/car_pic_ctr.png") no-repeat 0px 0px;
+        }
+
+
+        .car_pic_ctr .ctr_r {
+            float: right;
+            width: 0;
+            height: 26px;
+            padding-right: 45px;
+            background: url("images/h1/car_pic_ctr.png") no-repeat 25px -78px;
+        }
+
+        .car_pic_ctr .ctr_center {
+            float: left;
+            width: 300px;
+            height: 26px;
+            margin: 0 20px;
+            background: blue url("images/h1/car_pic_ctr.png") repeat-x 0px -52px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .car_pic_ctr .ctr_center b {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 21px;
+            height: 26px;
+            background: url("images/h1/car_pic_ctr.png") no-repeat 0px -104px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="car_pic">
+    <div class="imglist" id="imglist">
+        <ul>
+            <li class="cur"><img src="images/h1/0.jpg" alt=""></li>
+            <li><img src="images/h1/1.jpg" alt=""></li>
+            <li><img src="images/h1/2.jpg" alt=""></li>
+            <li><img src="images/h1/3.jpg" alt=""></li>
+            <li><img src="images/h1/4.jpg" alt=""></li>
+        </ul>
+    </div>
+    <div class="car_pic_ctr">
+        <div class="ctr_l">0°</div>
+        <div class="ctr_center" id="ctr_center">
+            <b id="barB"></b>
+        </div>
+        <div class="ctr_r">180°</div>
+    </div>
+</div>
+
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script>
+    let $barB = $("#barB")
+    let $ctr_center = $("#ctr_center")
+    let $imagelis = $("#imglist li")
+
+    let step = ($ctr_center.outerWidth() - $barB.outerWidth()) / 4
+
+    let idx = 0
+
+    $barB.draggable({
+        "axis": "x",
+        "containment": "parent",
+        "grid": [step],
+        "drag": function (event, ui) {
+            if (idx !== parseInt(ui.position.left / step)) {
+                $imagelis.eq(idx).stop(true).fadeOut(10, function () {
+                    idx = parseInt(ui.position.left / step)
+                    $imagelis.eq(idx).stop(true).fadeIn(30)
+                })
+            }
+        }
+    })
+
+    $ctr_center.click(function (evnet) {
+        let x = event.clientX - $ctr_center.offset().left
+
+        // 老图淡出，参数之后新图淡入
+        $imagelis.eq(idx).stop(true).fadeOut(10, function () {
+            idx = Math.round(x / step)
+            $imagelis.eq(idx).stop(true).fadeIn(30)
+            $barB.css("left", idx * step)
+        })
+    })
+</script>
+</body>
+</html>

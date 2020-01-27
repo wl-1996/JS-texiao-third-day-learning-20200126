@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>jQueryUI插件实现拖拽</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .box {
+            width: 600px;
+            height: 600px;
+            background: #ccc;
+            position: relative;
+            margin: 100px;
+        }
+
+        p {
+            width: 60px;
+            height: 60px;
+            background: skyblue;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="jquery-ui.min.css">
+</head>
+<body>
+<div class="box">
+    <p></p>
+</div>
+
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script>
+    $("p").draggable({
+        // axis: "x",//约束在某个轴上
+        containment: "parent",//在父盒子中拖拽
+        // grid: [200],//步长
+        drag: function (event, ui) {
+            console.log(ui.position.left, ui.position.top)
+        }
+    })
+
+    $("div").resizable()
+</script>
+</body>
+</html>

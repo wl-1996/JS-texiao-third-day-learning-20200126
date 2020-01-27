@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>左侧跟随广告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 5000px;
+        }
+
+        div {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 300px;
+            background: gold;
+        }
+    </style>
+</head>
+<body>
+<div id="box"></div>
+
+<script src="js/animate-2.0.2.js"></script>
+<script>
+    let box = document.getElementById("box")
+    let A = box.offsetHeight //box盒子的高，包括边框
+
+    move()
+
+    window.onscroll = move //页面卷动的时候触发
+    window.onresize = move //页面尺寸更改的时候触发
+
+    function move() {
+        //B表示浏览器窗口的高
+        let B = document.documentElement.clientHeight
+        //C表示页面卷动值
+        let C = document.body.scrollTop || document.documentElement.scrollTop
+        let target = C + (B - A) / 2
+        animate(box, {"top": target}, 1000)
+        console.log(A, B, C)
+    }
+</script>
+</body>
+</html>

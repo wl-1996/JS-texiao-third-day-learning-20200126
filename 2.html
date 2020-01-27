@@ -135,15 +135,18 @@
     // 得到所有楼层div
     // 本来可以用document.getElementsByClassName方法得到floor元素
     // 但是IE8不兼容，所以用for循环遍历，下边是立即执行函数
-    let floor = []//包含所有floor的div
+    let floorArr = []//包含所有floor的div
     let floorOffsetTopArr = []//存放所有楼层的净高
     for (let i = 0; i < document.body.childNodes.length; i++) {
         if (document.body.childNodes[i].nodeType == 1 && document.body.childNodes[i].className.indexOf("floor") !== -1) {
-            floor.push(document.body.childNodes[i])
+            floorArr.push(document.body.childNodes[i])
             floorOffsetTopArr.push(document.body.childNodes[i].offsetTop)
         }
     }
-    floorOffsetTopArr.push(Infinity)
+    let floorArrLength = floorArr.length
+    //offsetTop这个数组，里面存放的是所有.floor楼层的offsetTop值，
+    // 数组的最后一项应该就是最后一个楼层的下边框距离页面顶部的距离
+    floorOffsetTopArr.push(floorArr[floorArrLength - 1].clientHeight + floorOffsetTopArr[floorArrLength - 1])
 
     let nowfloor = NaN //NaN表示不在任何楼层
     // 页面滚动事件：
@@ -151,8 +154,8 @@
         //备份一下老楼层编号：
         let scrollTop = document.body.scrollTop || document.documentElement.scrollTop
         //判断此时在第几个楼层，就相当于判断我们现在的卷动值在正序数组floorOffsetTopArr中的第几位
-        for (let i = 0; i < floorOffsetTopArr.length; i++) {
-            if (scrollTop > floorOffsetTopArr[i] && scrollTop < floorOffsetTopArr[i + 1]) {
+        for (var i = 0; i < floorArrLength; i++) {
+            if (scrollTop >= floorOffsetTopArr[i] - 200 && scrollTop < floorOffsetTopArr[i + 1] - 200) {
                 // 此时在第i层，但是我们为了防止动画、DOM操作频繁触发，仅当楼层发生变化时，
                 // 再做里面的事情：验证i有无变化
                 if (i != nowfloor) {
@@ -166,7 +169,54 @@
                     //给新信号量加cur
                     leftNavLis[nowfloor].className = "cur"
                 }
+                break
             }
+        }
+
+        //如果数组中没有找到合适的位置：
+        if (i == floorArrLength) {
+            //老信号量这个人去掉cur
+            !isNaN(nowfloor) && (leftNavLis[nowfloor].className = "")
+            //改变信号量
+            nowfloor = NaN //NaN表示当前不在任何楼层
+        }
+    }
+
+    // 左侧导航li的监听
+    for (let i = 0; i < leftNavLis.length; i++) {
+        leftNavLis[i].index = i
+        leftNavLis[i].onclick = function () {
+            idx = this.index
+            scrollAnimate(floorOffsetTopArr[this.index], 1000)
+        }
+    }
+
+    //窗口动画函数
+    function scrollAnimate(target,time){
+        let frameNumber = 0;	//帧编号
+        let start = document.body.scrollTop || document.documentElement.scrollTop;	 //起点
+        let distance = target - start;
+        let interval = 10;
+        let maxFrame = time / interval;
+
+        clearInterval(timer);
+        var timer = setInterval(function(){
+            frameNumber++;
+            if(frameNumber == maxFrame){
+                clearInterval(timer);
+            }
+            //第一个参数t表示当前帧编号
+            //第二个参数b表示起始位置
+            //第三个参数c表示变化量
+            //第四个参数d表示总帧数
+            //返回当前帧应该在哪儿
+            document.body.scrollTop = document.documentElement.scrollTop = CubicEaseInOut(frameNumber,start,distance,maxFrame);
+        },10);
+
+
+        function CubicEaseInOut(t, b, c, d) {
+            if ((t /= d / 2) < 1) return c / 2 * t * t * t + b;
+            return c / 2 * ((t -= 2) * t * t + 2) + b;
         }
     }
 </script>
