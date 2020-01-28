@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>jQuery版本滚滚屏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            /*overflow: hidden;*/
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .container .page {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .page0 {
+            background: yellowgreen;
+        }
+
+        .page1 {
+            background: orange;
+        }
+
+        .page2 {
+            background: skyblue;
+        }
+
+        .page3 {
+            background: gold;
+        }
+
+        .page4 {
+            background: rgb(111, 222, 123);
+        }
+
+        .page1 .shishi{
+            position: absolute;
+            left: -600px;
+        }
+        .page1 .longlong{
+            position: absolute;
+            left: -600px;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="container">
+    <div class="page page0">
+        <h1>0</h1>
+    </div>
+    <div class="page page1">
+        <h1>1</h1>
+        <img src="images/shishi.jpg" class="shishi" alt="">
+        <img src="images/longlong.jpg" class="longlong" alt="">
+    </div>
+    <div class="page page2">
+        <h1>2</h1>
+    </div>
+    <div class="page page3">
+        <h1>3</h1>
+    </div>
+    <div class="page page4">
+        <h1>4</h1>
+    </div>
+</div>
+
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/jquery.mousewheel.min.js"></script>
+<script src="js/jquery.easie.js"></script>
+<script>
+    $container = $("#container")
+
+    let idx = 0
+
+    //里面放的是所有进场动画 INARRAY[1] ，
+    // 就是进入1这个屏幕的动画
+    let INARRAY = []
+    //出场动画
+    let OUTARRAY = []
+
+    $(document).mousewheel(function (event) {
+        // 函数节流
+        if ($container.is(":animated")) return
+        //鼠标滚轮↓ 信号量+1 deltaY为 -1
+        //鼠标滚轮↑ 信号量-1 deltaY为 +1
+        //备份信号量
+        let oldidx = idx
+        //改变信号量
+        idx -= event.deltaY
+
+        // 验收
+        if (idx < 0) {
+            idx = 0
+        } else if (idx > 4) {
+            idx = 4
+        }
+
+        //如果旧信号量不等于新信号量，说明滑轮滚动了，信号量改变了
+        if (oldidx !== idx) {
+            //判断旧信号量对应的出场数组元素是否是函数，如果是就调用
+            if (typeof OUTARRAY[oldidx] == "function") {
+                OUTARRAY[oldidx]()
+            }
+            // 让页面滚动到新信号量对应位置，运动完后调用回调函数：
+            $container.animate({"top": -100 * idx + "%"},600,function () {
+                //如果新信号量对应的入场数组元素是函数，就调用它
+                if(typeof INARRAY[idx] == "function"){
+                    INARRAY[idx]()
+                }
+            })
+        }
+    })
+
+    // 定义入场出场动画
+
+    // 1号页面进场动画
+    INARRAY[1] = function(){
+        $(".shishi").show().animate({"left":400},500)
+        $(".longlong").show().delay(600).animate({"left":600,"top":300},500)
+    }
+
+    // 1号页面的出场动画
+    OUTARRAY[1] = function () {
+        $(".shishi").fadeOut(300,function () {
+            $(".shishi").css("left",-600)
+        })
+        $(".longlong").fadeOut(300,function () {
+            $(".longlong").css("left",-600)
+        })
+    }
+</script>
+</body>
+</html>
